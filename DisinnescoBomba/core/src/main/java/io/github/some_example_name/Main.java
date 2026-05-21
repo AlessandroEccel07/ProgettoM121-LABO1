@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
@@ -26,6 +27,16 @@ public class Main extends ApplicationAdapter {
     private float dotVelX=0;
     private Rectangle dotBounds;
     private Rectangle colorRectanglebounds;
+    private Rectangle redRectanglebounds;
+    private Rectangle yellowRectanglebounds;
+    private Rectangle greenRectanglebounds;
+    private Rectangle blueRectanglebounds;
+    private String color = "null";
+    private BitmapFont font;
+    private float timer;
+    private String inputCodice;
+
+
 
     @Override
     public void create() {
@@ -34,10 +45,22 @@ public class Main extends ApplicationAdapter {
         background = new Texture("background.png");
         dotBounds =new Rectangle(dotX, dotY,10,10);
         colorRectanglebounds =new Rectangle(484, 558, 250,245);
+        redRectanglebounds=new Rectangle(491, 711, 95,77);
+        yellowRectanglebounds=new Rectangle(491, 569, 93,67);
+        greenRectanglebounds=new Rectangle(628, 566, 92,67);
+        blueRectanglebounds=new Rectangle(628, 715, 94,75);
+        font = new BitmapFont();
+        font.setColor(Color.RED);
+        font.getData().setScale(5f);
+        timer=30;
+        inputCodice="";
     }
 
     @Override
     public void render() {
+        timer -= Gdx.graphics.getDeltaTime();
+        float timers=Math.round(timer*100f)/100f;
+
         float dt = Gdx.graphics.getDeltaTime();
         dotVelX = 0;
         dotVelY = 0;
@@ -60,23 +83,52 @@ public class Main extends ApplicationAdapter {
         if(Gdx.input.isKeyPressed(Input.Keys.Q)) {
             System.out.println(dotX+","+ dotY);
         }
+        if(Gdx.input.isKeyPressed(Input.Keys.Q)) {
+            System.out.println(dotX+","+ dotY);
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
+            inputCodice+="1";
+            System.out.println(inputCodice);
+        }
         dotY += dotVelX* dt;
         dotX += dotVelY* dt;
-        if (dotBounds.overlaps(colorRectanglebounds)) {
-            System.out.println("Collision");
+//        if (!(dotBounds.overlaps(colorRectanglebounds))) {
+//            dotX= 610;
+//            dotY= 670;
+//        }
+        if (dotBounds.overlaps(redRectanglebounds)) {
+            color="red";
+        }
+        if (dotBounds.overlaps(yellowRectanglebounds)) {
+            color="yellow";
+        }
+        if (dotBounds.overlaps(greenRectanglebounds)) {
+            color="green";
+        }
+        if (dotBounds.overlaps(blueRectanglebounds)) {
+            color="blue";
+        }
+        if (!(dotBounds.overlaps(redRectanglebounds))||!(dotBounds.overlaps(yellowRectanglebounds))||!(dotBounds.overlaps(greenRectanglebounds))||!(dotBounds.overlaps(blueRectanglebounds))) {
+            color="null";
         }
         dotBounds.setPosition(dotX, dotY);
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         batch.begin();
         batch.draw(background, 0, 0);
+        font.draw(batch, timers+"", 1025, 810);
+        font.draw(batch, inputCodice, 543,293);
         batch.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.circle(dotX , dotY, 10);
+        shapeRenderer.circle(dotX , dotY, 1);
         shapeRenderer.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.WHITE);
         shapeRenderer.rect(colorRectanglebounds.x , colorRectanglebounds.y, 250,245);
+        shapeRenderer.rect(redRectanglebounds.x , redRectanglebounds.y, 95,77);
+        shapeRenderer.rect(greenRectanglebounds.x , greenRectanglebounds.y, 92,67);
+        shapeRenderer.rect(yellowRectanglebounds.x , yellowRectanglebounds.y, 93,67);
+        shapeRenderer.rect(blueRectanglebounds.x , blueRectanglebounds.y, 94,75);
         shapeRenderer.end();
     }
 
