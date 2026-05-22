@@ -33,9 +33,13 @@ public class Main extends ApplicationAdapter {
     private Rectangle blueRectanglebounds;
     private String color = "null";
     private BitmapFont font;
-    private float timer;
+    private double timer;
     private String inputCodice;
-
+    private int countNumbers;
+    private Texture RedButtonOn;
+    private Texture RedButtonOff;
+    private double redButtonTimer;
+    private boolean redButtonisOn;
 
 
     @Override
@@ -43,6 +47,8 @@ public class Main extends ApplicationAdapter {
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
         background = new Texture("background.png");
+        RedButtonOn = new Texture("RedButtonOn.png");
+        RedButtonOff = new Texture("RedButtonOff.png");
         dotBounds =new Rectangle(dotX, dotY,10,10);
         colorRectanglebounds =new Rectangle(484, 558, 250,245);
         redRectanglebounds=new Rectangle(491, 711, 95,77);
@@ -52,13 +58,30 @@ public class Main extends ApplicationAdapter {
         font = new BitmapFont();
         font.setColor(Color.RED);
         font.getData().setScale(5f);
-        timer=30;
+        timer=10;
+        redButtonTimer=2;
+        redButtonisOn= false;
         inputCodice="";
+        countNumbers=0;
     }
 
     @Override
     public void render() {
-        timer -= Gdx.graphics.getDeltaTime();
+        if(!(timer<=0)){
+            timer -= Gdx.graphics.getDeltaTime();
+        }else timer=0;
+        redButtonTimer-=Gdx.graphics.getDeltaTime();
+
+            if(redButtonTimer>1){
+                redButtonisOn=true;
+            }
+            if(redButtonTimer<1){
+                redButtonisOn=false;
+            }
+            if(redButtonTimer<0){
+                redButtonTimer=2;
+            }
+
         float timers=Math.round(timer*100f)/100f;
 
         float dt = Gdx.graphics.getDeltaTime();
@@ -86,10 +109,55 @@ public class Main extends ApplicationAdapter {
         if(Gdx.input.isKeyPressed(Input.Keys.Q)) {
             System.out.println(dotX+","+ dotY);
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
-            inputCodice+="1";
-            System.out.println(inputCodice);
+        if (Gdx.input.isKeyPressed(Input.Keys.R)){
+            countNumbers=0;
+            inputCodice="";
         }
+        //KEYPAD
+        if (countNumbers<=7) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
+                inputCodice += "1";
+                System.out.println(inputCodice);
+                countNumbers++;
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
+                inputCodice += "2";
+                countNumbers++;
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
+                inputCodice += "3";
+                countNumbers++;
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
+                inputCodice += "4";
+                countNumbers++;
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
+                inputCodice += "5";
+                countNumbers++;
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
+                inputCodice += "6";
+                countNumbers++;
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
+                inputCodice += "7";
+                countNumbers++;
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_8)) {
+                inputCodice += "8";
+                countNumbers++;
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_9)) {
+                inputCodice += "9";
+                countNumbers++;
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_0)) {
+                inputCodice += "0";
+                countNumbers++;
+            }
+        }
+
         dotY += dotVelX* dt;
         dotX += dotVelY* dt;
 //        if (!(dotBounds.overlaps(colorRectanglebounds))) {
@@ -111,12 +179,18 @@ public class Main extends ApplicationAdapter {
         if (!(dotBounds.overlaps(redRectanglebounds))||!(dotBounds.overlaps(yellowRectanglebounds))||!(dotBounds.overlaps(greenRectanglebounds))||!(dotBounds.overlaps(blueRectanglebounds))) {
             color="null";
         }
+
         dotBounds.setPosition(dotX, dotY);
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         batch.begin();
         batch.draw(background, 0, 0);
         font.draw(batch, timers+"", 1025, 810);
-        font.draw(batch, inputCodice, 543,293);
+        font.draw(batch, inputCodice, 450,307);
+        if (redButtonisOn){
+        batch.draw(RedButtonOn, 1015,162);
+        }else {
+            batch.draw(RedButtonOff, 1015, 162);
+        }
         batch.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.WHITE);
