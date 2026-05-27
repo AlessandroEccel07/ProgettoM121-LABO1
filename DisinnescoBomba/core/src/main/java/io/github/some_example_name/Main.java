@@ -38,6 +38,7 @@ public class Main extends ApplicationAdapter {
     private int countNumbers;
     private Texture RedButtonOn;
     private Texture RedButtonOff;
+    private Texture explosion;
     private double redButtonTimer;
     private boolean redButtonisOn;
 
@@ -49,6 +50,7 @@ public class Main extends ApplicationAdapter {
         background = new Texture("background.png");
         RedButtonOn = new Texture("RedButtonOn.png");
         RedButtonOff = new Texture("RedButtonOff.png");
+        explosion = new Texture("explosionBomb.gif");
         dotBounds =new Rectangle(dotX, dotY,10,10);
         colorRectanglebounds =new Rectangle(484, 558, 250,245);
         redRectanglebounds=new Rectangle(491, 711, 95,77);
@@ -58,7 +60,7 @@ public class Main extends ApplicationAdapter {
         font = new BitmapFont();
         font.setColor(Color.RED);
         font.getData().setScale(5f);
-        timer=10;
+        timer=5000;
         redButtonTimer=2;
         redButtonisOn= false;
         inputCodice="";
@@ -190,6 +192,9 @@ public class Main extends ApplicationAdapter {
         batch.draw(RedButtonOn, 1015,162);
         }else {
             batch.draw(RedButtonOff, 1015, 162);
+        }
+        if(timer==0){
+            batch.draw(explosion, 0, 0, 1681,919);
         }
         batch.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
