@@ -11,5 +11,7 @@ public class Level1 extends Level {
         setLampeggiante(true);
 
         setLuciAccese(3);
+
+        setAttivo(false);
     }
 }

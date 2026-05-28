@@ -6,6 +6,7 @@ public class Level {
     private String coloreDisinnesco;
     private boolean lampeggiante;
     private int luciAccese;
+    private boolean attivo;
 
     public int getCodiceDisinnesco() {
         return codiceDisinnesco;
@@ -38,4 +39,14 @@ public class Level {
     public void setLuciAccese(int luciAccese) {
         this.luciAccese = luciAccese;
     }
+
+    public boolean isAttivo() {
+        return attivo;
+    }
+
+    public void setAttivo(boolean attivo) {
+        this.attivo = attivo;
+    }
+
+
 }

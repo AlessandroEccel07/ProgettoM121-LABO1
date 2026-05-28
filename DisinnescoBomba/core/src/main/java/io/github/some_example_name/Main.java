@@ -31,6 +31,9 @@ public class Main extends ApplicationAdapter {
     private Rectangle yellowRectanglebounds;
     private Rectangle greenRectanglebounds;
     private Rectangle blueRectanglebounds;
+    private Rectangle livellofacilebounds;
+    private Rectangle livellomediobounds;
+    private Rectangle livellodifficilebounds;
     private String color = "null";
     private BitmapFont font;
     private double timer;
@@ -39,15 +42,17 @@ public class Main extends ApplicationAdapter {
     private Texture RedButtonOn;
     private Texture RedButtonOff;
     private Texture explosion;
+    private Texture menuBackground;
     private double redButtonTimer;
     private boolean redButtonisOn;
-
+    Level level1_1 = new Level1();
 
     @Override
     public void create() {
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
         background = new Texture("background.png");
+        menuBackground = new Texture("menuBackground.png");
         RedButtonOn = new Texture("RedButtonOn.png");
         RedButtonOff = new Texture("RedButtonOff.png");
         explosion = new Texture("explosionBomb.gif");
@@ -57,6 +62,9 @@ public class Main extends ApplicationAdapter {
         yellowRectanglebounds=new Rectangle(491, 569, 93,67);
         greenRectanglebounds=new Rectangle(628, 566, 92,67);
         blueRectanglebounds=new Rectangle(628, 715, 94,75);
+        livellofacilebounds= new Rectangle(320,140,300,185);
+        livellomediobounds= new Rectangle(680, 140, 300,185 );
+        livellodifficilebounds= new Rectangle(1050, 140, 300,185 );
         font = new BitmapFont();
         font.setColor(Color.RED);
         font.getData().setScale(5f);
@@ -65,10 +73,24 @@ public class Main extends ApplicationAdapter {
         redButtonisOn= false;
         inputCodice="";
         countNumbers=0;
+
     }
 
     @Override
     public void render() {
+        if(level1_1.isAttivo()==false){
+            batch.begin();
+            batch.draw(menuBackground,0,0, 1681,919);
+
+            batch.end();
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.setColor(Color.YELLOW);
+            shapeRenderer.rect(livellofacilebounds.x , livellofacilebounds.y, 300,185);
+            shapeRenderer.rect(livellodifficilebounds.x , livellodifficilebounds.y, 300,185);
+            shapeRenderer.rect(livellomediobounds.x , livellomediobounds.y, 300,185);
+            shapeRenderer.end();
+
+        }else{
         if(!(timer<=0)){
             timer -= Gdx.graphics.getDeltaTime();
         }else timer=0;
@@ -208,7 +230,7 @@ public class Main extends ApplicationAdapter {
         shapeRenderer.rect(greenRectanglebounds.x , greenRectanglebounds.y, 92,67);
         shapeRenderer.rect(yellowRectanglebounds.x , yellowRectanglebounds.y, 93,67);
         shapeRenderer.rect(blueRectanglebounds.x , blueRectanglebounds.y, 94,75);
-        shapeRenderer.end();
+        shapeRenderer.end();}
     }
 
     @Override
