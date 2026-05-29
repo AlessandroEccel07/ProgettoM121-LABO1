@@ -34,6 +34,8 @@ public class Main extends ApplicationAdapter {
     private Rectangle livellofacilebounds;
     private Rectangle livellomediobounds;
     private Rectangle livellodifficilebounds;
+    private Rectangle istruzioniBounds;
+    private Circle stopButton;
     private String color = "null";
     private BitmapFont font;
     private double timer;
@@ -43,8 +45,10 @@ public class Main extends ApplicationAdapter {
     private Texture RedButtonOff;
     private Texture explosion;
     private Texture menuBackground;
+    private Texture istruzioni;
     private double redButtonTimer;
     private boolean redButtonisOn;
+    private boolean gameover;
     Level level1_1 = new Level1();
 
     @Override
@@ -56,6 +60,7 @@ public class Main extends ApplicationAdapter {
         RedButtonOn = new Texture("RedButtonOn.png");
         RedButtonOff = new Texture("RedButtonOff.png");
         explosion = new Texture("explosionBomb.gif");
+        istruzioni = new Texture("istruzioniFolder.png");
         dotBounds =new Rectangle(dotX, dotY,10,10);
         colorRectanglebounds =new Rectangle(484, 558, 250,245);
         redRectanglebounds=new Rectangle(491, 711, 95,77);
@@ -65,22 +70,31 @@ public class Main extends ApplicationAdapter {
         livellofacilebounds= new Rectangle(320,140,300,185);
         livellomediobounds= new Rectangle(680, 140, 300,185 );
         livellodifficilebounds= new Rectangle(1050, 140, 300,185 );
+        istruzioniBounds= new Rectangle(0, 100, 50,300 );
+        stopButton= new Circle(1148,615,55);
         font = new BitmapFont();
         font.setColor(Color.RED);
         font.getData().setScale(5f);
-        timer=5000;
+        timer=500;
         redButtonTimer=2;
         redButtonisOn= false;
         inputCodice="";
         countNumbers=0;
+        gameover=false;
 
     }
 
     @Override
     public void render() {
+        float mouseX = Gdx.input.getX();
+        float mouseY = Gdx.graphics.getHeight()- Gdx.input.getY();
         if(level1_1.isAttivo()==false){
             batch.begin();
             batch.draw(menuBackground,0,0, 1681,919);
+            if(livellofacilebounds.contains(mouseX,mouseY)&&Gdx.input.justTouched()){
+                level1_1.setAttivo(true);
+            }
+
 
             batch.end();
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
@@ -91,6 +105,7 @@ public class Main extends ApplicationAdapter {
             shapeRenderer.end();
 
         }else{
+
         if(!(timer<=0)){
             timer -= Gdx.graphics.getDeltaTime();
         }else timer=0;
@@ -133,7 +148,7 @@ public class Main extends ApplicationAdapter {
         if(Gdx.input.isKeyPressed(Input.Keys.Q)) {
             System.out.println(dotX+","+ dotY);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.R)){
+        if (Gdx.input.isKeyPressed(Input.Keys.BACKSPACE)){
             countNumbers=0;
             inputCodice="";
         }
@@ -182,6 +197,20 @@ public class Main extends ApplicationAdapter {
             }
         }
 
+        //LOGICA GIOCO
+            if(level1_1.isAttivo()){
+                if(stopButton.contains(mouseX,mouseY)&&Gdx.input.justTouched()){
+                    if(inputCodice.equals(level1_1.getCodiceDisinnesco())&&color.equals(level1_1.getColoreDisinnesco())){
+                        System.out.println("WIN");
+                    }else{
+                        gameover=true;
+                    }
+                }
+            }
+            if (timer==0){
+                gameover = true;
+            }
+
         dotY += dotVelX* dt;
         dotX += dotVelY* dt;
 //        if (!(dotBounds.overlaps(colorRectanglebounds))) {
@@ -191,18 +220,15 @@ public class Main extends ApplicationAdapter {
         if (dotBounds.overlaps(redRectanglebounds)) {
             color="red";
         }
-        if (dotBounds.overlaps(yellowRectanglebounds)) {
+        else if (dotBounds.overlaps(yellowRectanglebounds)) {
             color="yellow";
         }
-        if (dotBounds.overlaps(greenRectanglebounds)) {
+        else if (dotBounds.overlaps(greenRectanglebounds)) {
             color="green";
         }
-        if (dotBounds.overlaps(blueRectanglebounds)) {
+        else if (dotBounds.overlaps(blueRectanglebounds)) {
             color="blue";
-        }
-        if (!(dotBounds.overlaps(redRectanglebounds))||!(dotBounds.overlaps(yellowRectanglebounds))||!(dotBounds.overlaps(greenRectanglebounds))||!(dotBounds.overlaps(blueRectanglebounds))) {
-            color="null";
-        }
+        }else{color="null";}
 
         dotBounds.setPosition(dotX, dotY);
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
@@ -210,26 +236,29 @@ public class Main extends ApplicationAdapter {
         batch.draw(background, 0, 0);
         font.draw(batch, timers+"", 1025, 810);
         font.draw(batch, inputCodice, 450,307);
+        batch.draw(istruzioni, -10, 100,200,600 );
         if (redButtonisOn){
         batch.draw(RedButtonOn, 1015,162);
         }else {
             batch.draw(RedButtonOff, 1015, 162);
         }
-        if(timer==0){
+        if(gameover){
             batch.draw(explosion, 0, 0, 1681,919);
         }
         batch.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.circle(dotX , dotY, 1);
+        shapeRenderer.circle(dotX , dotY, 10);
         shapeRenderer.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.rect(colorRectanglebounds.x , colorRectanglebounds.y, 250,245);
-        shapeRenderer.rect(redRectanglebounds.x , redRectanglebounds.y, 95,77);
-        shapeRenderer.rect(greenRectanglebounds.x , greenRectanglebounds.y, 92,67);
-        shapeRenderer.rect(yellowRectanglebounds.x , yellowRectanglebounds.y, 93,67);
-        shapeRenderer.rect(blueRectanglebounds.x , blueRectanglebounds.y, 94,75);
+        shapeRenderer.rect(istruzioniBounds.x, istruzioniBounds.y, 50,300);
+//        shapeRenderer.rect(colorRectanglebounds.x , colorRectanglebounds.y, 250,245);
+//        shapeRenderer.rect(redRectanglebounds.x , redRectanglebounds.y, 95,77);
+//        shapeRenderer.rect(greenRectanglebounds.x , greenRectanglebounds.y, 92,67);
+//        shapeRenderer.rect(yellowRectanglebounds.x , yellowRectanglebounds.y, 93,67);
+//        shapeRenderer.rect(blueRectanglebounds.x , blueRectanglebounds.y, 94,75);
+//        shapeRenderer.circle(stopButton.x, stopButton.y, 55);
         shapeRenderer.end();}
     }
 

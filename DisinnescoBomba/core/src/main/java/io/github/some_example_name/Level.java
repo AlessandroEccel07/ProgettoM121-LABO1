@@ -1,18 +1,20 @@
 package io.github.some_example_name;
 
+import com.sun.org.apache.xpath.internal.objects.XString;
+
 public class Level {
 
-    private int codiceDisinnesco;
+    private String codiceDisinnesco;
     private String coloreDisinnesco;
     private boolean lampeggiante;
     private int luciAccese;
     private boolean attivo;
 
-    public int getCodiceDisinnesco() {
+    public String getCodiceDisinnesco() {
         return codiceDisinnesco;
     }
 
-    public void setCodiceDisinnesco(int codiceDisinnesco) {
+    public void setCodiceDisinnesco(String codiceDisinnesco) {
         this.codiceDisinnesco = codiceDisinnesco;
     }
 

@@ -4,9 +4,9 @@ public class Level1 extends Level {
 
     public Level1() {
 
-        setCodiceDisinnesco(1234);
+        setCodiceDisinnesco("5002");
 
-        setColoreDisinnesco("Rosso");
+        setColoreDisinnesco("red");
 
         setLampeggiante(true);
 
