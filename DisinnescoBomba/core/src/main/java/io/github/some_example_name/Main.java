@@ -34,6 +34,7 @@ public class Main extends ApplicationAdapter {
     private Rectangle livellofacilebounds;
     private Rectangle livellomediobounds;
     private Rectangle livellodifficilebounds;
+    private Rectangle istruzioniFolderBounds;
     private Rectangle istruzioniBounds;
     private Circle stopButton;
     private String color = "null";
@@ -45,10 +46,14 @@ public class Main extends ApplicationAdapter {
     private Texture RedButtonOff;
     private Texture explosion;
     private Texture menuBackground;
+    private Texture istruzioniFolder;
     private Texture istruzioni;
+    private Texture winScreen;
     private double redButtonTimer;
     private boolean redButtonisOn;
     private boolean gameover;
+    private boolean istruzioniOn;
+    private boolean win;
     Level level1_1 = new Level1();
 
     @Override
@@ -60,7 +65,9 @@ public class Main extends ApplicationAdapter {
         RedButtonOn = new Texture("RedButtonOn.png");
         RedButtonOff = new Texture("RedButtonOff.png");
         explosion = new Texture("explosionBomb.gif");
-        istruzioni = new Texture("istruzioniFolder.png");
+        istruzioniFolder = new Texture("istruzioniFolder.png");
+        istruzioni = new Texture("istruzioni.png");
+        winScreen = new Texture("BombaDisinnescata.png");
         dotBounds =new Rectangle(dotX, dotY,10,10);
         colorRectanglebounds =new Rectangle(484, 558, 250,245);
         redRectanglebounds=new Rectangle(491, 711, 95,77);
@@ -70,7 +77,8 @@ public class Main extends ApplicationAdapter {
         livellofacilebounds= new Rectangle(320,140,300,185);
         livellomediobounds= new Rectangle(680, 140, 300,185 );
         livellodifficilebounds= new Rectangle(1050, 140, 300,185 );
-        istruzioniBounds= new Rectangle(0, 100, 50,300 );
+        istruzioniFolderBounds= new Rectangle(-10, 100,160,600 );
+        istruzioniBounds= new Rectangle(330, 50,1034 , 698 );
         stopButton= new Circle(1148,615,55);
         font = new BitmapFont();
         font.setColor(Color.RED);
@@ -81,6 +89,8 @@ public class Main extends ApplicationAdapter {
         inputCodice="";
         countNumbers=0;
         gameover=false;
+        istruzioniOn=false;
+        win=false;
 
     }
 
@@ -89,6 +99,7 @@ public class Main extends ApplicationAdapter {
         float mouseX = Gdx.input.getX();
         float mouseY = Gdx.graphics.getHeight()- Gdx.input.getY();
         if(level1_1.isAttivo()==false){
+            win=false;
             batch.begin();
             batch.draw(menuBackground,0,0, 1681,919);
             if(livellofacilebounds.contains(mouseX,mouseY)&&Gdx.input.justTouched()){
@@ -199,9 +210,17 @@ public class Main extends ApplicationAdapter {
 
         //LOGICA GIOCO
             if(level1_1.isAttivo()){
+                if(!istruzioniOn&&istruzioniFolderBounds.contains(mouseX,mouseY)&&Gdx.input.justTouched()){
+                    istruzioniOn=true;
+                }
+                else if(istruzioniOn&&Gdx.input.justTouched()&&!istruzioniBounds.contains(mouseX,mouseY)){
+                    istruzioniOn=false;
+
+                }
                 if(stopButton.contains(mouseX,mouseY)&&Gdx.input.justTouched()){
                     if(inputCodice.equals(level1_1.getCodiceDisinnesco())&&color.equals(level1_1.getColoreDisinnesco())){
                         System.out.println("WIN");
+                        win=true;
                     }else{
                         gameover=true;
                     }
@@ -236,23 +255,42 @@ public class Main extends ApplicationAdapter {
         batch.draw(background, 0, 0);
         font.draw(batch, timers+"", 1025, 810);
         font.draw(batch, inputCodice, 450,307);
-        batch.draw(istruzioni, -10, 100,200,600 );
-        if (redButtonisOn){
-        batch.draw(RedButtonOn, 1015,162);
-        }else {
-            batch.draw(RedButtonOff, 1015, 162);
+        batch.draw(istruzioniFolder, -10, 100,400,600 );
+        if(istruzioniOn){
+            batch.draw(istruzioni, 330,50, 1034 , 698);
+        }
+        if(!istruzioniOn) {
+            if (redButtonisOn) {
+                batch.draw(RedButtonOn, 1015, 162);
+            } else {
+                batch.draw(RedButtonOff, 1015, 162);
+            }
         }
         if(gameover){
             batch.draw(explosion, 0, 0, 1681,919);
         }
+        if(win){
+            batch.draw(winScreen, 0,0, 1681,919);
+            timer=500;
+            dotY=670;
+            dotX=610;
+            inputCodice="";
+            if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
+                level1_1.setAttivo(false);
+            }
+        }
+
         batch.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.circle(dotX , dotY, 10);
+        if(!istruzioniOn) {
+            shapeRenderer.circle(dotX, dotY, 10);
+        }
         shapeRenderer.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.rect(istruzioniBounds.x, istruzioniBounds.y, 50,300);
+//        shapeRenderer.rect(istruzioniFolderBounds.x, istruzioniFolderBounds.y, 160,600);
+//        shapeRenderer.rect(istruzioniBounds.x, istruzioniBounds.y, istruzioni.getWidth(),istruzioni.getHeight());
 //        shapeRenderer.rect(colorRectanglebounds.x , colorRectanglebounds.y, 250,245);
 //        shapeRenderer.rect(redRectanglebounds.x , redRectanglebounds.y, 95,77);
 //        shapeRenderer.rect(greenRectanglebounds.x , greenRectanglebounds.y, 92,67);
