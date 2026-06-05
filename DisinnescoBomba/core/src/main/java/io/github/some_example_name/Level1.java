@@ -6,6 +6,7 @@ public class Level1 extends Level {
 
 
     public Level1() {
+        setTempo(500);
         genera();
 
         int valore=0;

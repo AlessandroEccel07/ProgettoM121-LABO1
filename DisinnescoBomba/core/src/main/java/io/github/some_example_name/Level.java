@@ -9,6 +9,7 @@ public class Level {
     private boolean lampeggiante;
     private int luciAccese;
     private boolean attivo;
+    private double tempo;
 
     public String getCodiceDisinnesco() {
         return codiceDisinnesco;
@@ -49,6 +50,10 @@ public class Level {
     public void setAttivo(boolean attivo) {
         this.attivo = attivo;
     }
+
+    public double getTempo(){return tempo;}
+
+    public void setTempo(double tempo){this.tempo=tempo;}
 
 
 }

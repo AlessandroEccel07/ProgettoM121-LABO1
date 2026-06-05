@@ -3,7 +3,10 @@ package io.github.some_example_name;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -54,6 +57,14 @@ public class Main extends ApplicationAdapter {
     private boolean gameover;
     private boolean istruzioniOn;
     private boolean win;
+    private Sound bombDefuse;
+    private Music menuMusic;
+    private Music winMusic;
+    private Music bombTick;
+    private Sound explosionFast;
+    public boolean wasgameover;
+    private float dissolvenza;
+    private boolean getTempo;
     Level1 level1_1 = new Level1();
 
     @Override
@@ -83,7 +94,7 @@ public class Main extends ApplicationAdapter {
         font = new BitmapFont();
         font.setColor(Color.RED);
         font.getData().setScale(5f);
-        timer=500;
+        timer=0;
         redButtonTimer=2;
         redButtonisOn= false;
         inputCodice="";
@@ -91,6 +102,19 @@ public class Main extends ApplicationAdapter {
         gameover=false;
         istruzioniOn=false;
         win=false;
+        wasgameover= false;
+        dissolvenza= 1f;
+
+        bombDefuse=Gdx.audio.newSound(Gdx.files.internal("bombDefuse.mp3"));
+        explosionFast=Gdx.audio.newSound(Gdx.files.internal("explosionFast.mp3"));
+        menuMusic=Gdx.audio.newMusic(Gdx.files.internal("menuMusic.mp3"));
+        winMusic=Gdx.audio.newMusic(Gdx.files.internal("winMusic.mp3"));
+        bombTick=Gdx.audio.newMusic(Gdx.files.internal("bombTick.mp3"));
+
+        bombTick.setLooping(true);
+        menuMusic.setLooping(true);
+        menuMusic.setVolume(0.3f);
+        getTempo=false;
 
     }
 
@@ -99,12 +123,16 @@ public class Main extends ApplicationAdapter {
         float mouseX = Gdx.input.getX();
         float mouseY = Gdx.graphics.getHeight()- Gdx.input.getY();
         if(level1_1.isAttivo()==false){
+            dissolvenza=1f;
+            menuMusic.play();
+            winMusic.stop();
             win=false;
             gameover=false;
             batch.begin();
             batch.draw(menuBackground,0,0, 1681,919);
             if(livellofacilebounds.contains(mouseX,mouseY)&&Gdx.input.justTouched()){
                 level1_1.setAttivo(true);
+                bombTick.play();
             }
 
 
@@ -117,7 +145,11 @@ public class Main extends ApplicationAdapter {
             shapeRenderer.end();
 
         }else{
-
+        if(!getTempo) {
+            timer = level1_1.getTempo();
+            getTempo=true;
+        }
+        menuMusic.stop();
         if(!(timer<=0)){
             timer -= Gdx.graphics.getDeltaTime();
         }else timer=0;
@@ -220,16 +252,24 @@ public class Main extends ApplicationAdapter {
                 }
                 if(stopButton.contains(mouseX,mouseY)&&Gdx.input.justTouched()){
                     if(inputCodice.equals(level1_1.getCodiceDisinnesco())&&color.equals(level1_1.getColoreDisinnesco())){
-                        System.out.println("WIN");
+                        bombDefuse.play();
                         win=true;
+                        bombTick.stop();
+                        winMusic.play();
                     }else{
+                        explosionFast.play();
+                        bombTick.stop();
                         gameover=true;
                     }
                 }
             }
-            if (timer==0){
+            if (!wasgameover &&timer==0){
                 gameover = true;
+                bombTick.stop();
+                explosionFast.play();
+
             }
+            wasgameover= gameover;
 
         dotY += dotVelX* dt;
         dotX += dotVelY* dt;
@@ -252,6 +292,7 @@ public class Main extends ApplicationAdapter {
 
 
 
+
         dotBounds.setPosition(dotX, dotY);
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         batch.begin();
@@ -263,41 +304,44 @@ public class Main extends ApplicationAdapter {
             batch.draw(istruzioni, 330,50, 1034 , 698);
         }
         if(!istruzioniOn) {
-            if (level1_1.isLampeggiante()){
-            if (redButtonisOn) {
-                batch.draw(RedButtonOn, 1015, 162);
-            } else {
-                batch.draw(RedButtonOff, 1015, 162);
-            }}
-        }
-            if (level1_1.getLuciAccese() == 1) {
-                batch.draw(RedButtonOn, 895, 520, 65, 65);
+            if (level1_1.isLampeggiante()) {
+                if (redButtonisOn) {
+                    batch.draw(RedButtonOn, 1015, 162);
+                } else {
+                    batch.draw(RedButtonOff, 1015, 162);
+                }
             }
-            if(level1_1.getLuciAccese()==2){
-                batch.draw(RedButtonOn, 895, 520,65,65);
-                batch.draw(RedButtonOn, 895, 587,65,65);
-            }
-            if(level1_1.getLuciAccese()==3){
-                batch.draw(RedButtonOn, 895, 520,65,65);
-                batch.draw(RedButtonOn, 895, 587,65,65);
-                batch.draw(RedButtonOn, 895, 654,65,65);
-            }
-            if(level1_1.getLuciAccese()==4){
-                batch.draw(RedButtonOn, 895, 520,65,65);
-                batch.draw(RedButtonOn, 895, 587,65,65);
-                batch.draw(RedButtonOn, 895, 654,65,65);
-                batch.draw(RedButtonOn, 895, 721,65,65);
-            }
-        if(level1_1.getLuciAccese()==5){
-            batch.draw(RedButtonOn, 895, 520,65,65);
-            batch.draw(RedButtonOn, 895, 587,65,65);
-            batch.draw(RedButtonOn, 895, 654,65,65);
-            batch.draw(RedButtonOn, 895, 721,65,65);
-            batch.draw(RedButtonOn, 895, 788,65,65);
+                if (level1_1.getLuciAccese() == 1) {
+                    batch.draw(RedButtonOn, 895, 520, 65, 65);
+                }
+                if(level1_1.getLuciAccese()==2){
+                    batch.draw(RedButtonOn, 895, 520,65,65);
+                    batch.draw(RedButtonOn, 895, 587,65,65);
+                }
+                if(level1_1.getLuciAccese()==3){
+                    batch.draw(RedButtonOn, 895, 520,65,65);
+                    batch.draw(RedButtonOn, 895, 587,65,65);
+                    batch.draw(RedButtonOn, 895, 654,65,65);
+                }
+                if(level1_1.getLuciAccese()==4){
+                    batch.draw(RedButtonOn, 895, 520,65,65);
+                    batch.draw(RedButtonOn, 895, 587,65,65);
+                    batch.draw(RedButtonOn, 895, 654,65,65);
+                    batch.draw(RedButtonOn, 895, 721,65,65);
+                }
+                if(level1_1.getLuciAccese()==5){
+                    batch.draw(RedButtonOn, 895, 520,65,65);
+                    batch.draw(RedButtonOn, 895, 587,65,65);
+                    batch.draw(RedButtonOn, 895, 654,65,65);
+                    batch.draw(RedButtonOn, 895, 721,65,65);
+                    batch.draw(RedButtonOn, 895, 788,65,65);
+                }
+
         }
 
         if(win||gameover){
             if(gameover){
+
                 batch.draw(explosion, 0, 0, 1681,919);
             }
             if(win) {
@@ -322,6 +366,16 @@ public class Main extends ApplicationAdapter {
         else {
             shapeRenderer.circle(dotX, dotY, 1);
         }
+        if(gameover){
+            Gdx.gl.glEnable(GL20.GL_BLEND);
+            shapeRenderer.setColor(1f,1f,1f,dissolvenza);
+            shapeRenderer.rect(0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() );
+            dissolvenza-= Gdx.graphics.getDeltaTime()*0.1f;
+            if(dissolvenza<=0f){
+                dissolvenza=0f;
+            }
+
+        }
 
 
         shapeRenderer.end();
@@ -342,6 +396,7 @@ public class Main extends ApplicationAdapter {
     public void dispose() {
         background.dispose();
         shapeRenderer.dispose();
+        explosionFast.dispose();
         batch.dispose();
 
     }
