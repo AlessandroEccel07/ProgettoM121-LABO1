@@ -54,7 +54,7 @@ public class Main extends ApplicationAdapter {
     private boolean gameover;
     private boolean istruzioniOn;
     private boolean win;
-    Level level1_1 = new Level1();
+    Level1 level1_1 = new Level1();
 
     @Override
     public void create() {
@@ -64,7 +64,7 @@ public class Main extends ApplicationAdapter {
         menuBackground = new Texture("menuBackground.png");
         RedButtonOn = new Texture("RedButtonOn.png");
         RedButtonOff = new Texture("RedButtonOff.png");
-        explosion = new Texture("explosionBomb.gif");
+        explosion = new Texture("BombaEsplosa.png");
         istruzioniFolder = new Texture("istruzioniFolder.png");
         istruzioni = new Texture("istruzioni.png");
         winScreen = new Texture("BombaDisinnescata.png");
@@ -100,6 +100,7 @@ public class Main extends ApplicationAdapter {
         float mouseY = Gdx.graphics.getHeight()- Gdx.input.getY();
         if(level1_1.isAttivo()==false){
             win=false;
+            gameover=false;
             batch.begin();
             batch.draw(menuBackground,0,0, 1681,919);
             if(livellofacilebounds.contains(mouseX,mouseY)&&Gdx.input.justTouched()){
@@ -249,6 +250,8 @@ public class Main extends ApplicationAdapter {
             color="blue";
         }else{color="null";}
 
+
+
         dotBounds.setPosition(dotX, dotY);
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         batch.begin();
@@ -260,17 +263,47 @@ public class Main extends ApplicationAdapter {
             batch.draw(istruzioni, 330,50, 1034 , 698);
         }
         if(!istruzioniOn) {
+            if (level1_1.isLampeggiante()){
             if (redButtonisOn) {
                 batch.draw(RedButtonOn, 1015, 162);
             } else {
                 batch.draw(RedButtonOff, 1015, 162);
+            }}
+        }
+            if (level1_1.getLuciAccese() == 1) {
+                batch.draw(RedButtonOn, 895, 520, 65, 65);
             }
+            if(level1_1.getLuciAccese()==2){
+                batch.draw(RedButtonOn, 895, 520,65,65);
+                batch.draw(RedButtonOn, 895, 587,65,65);
+            }
+            if(level1_1.getLuciAccese()==3){
+                batch.draw(RedButtonOn, 895, 520,65,65);
+                batch.draw(RedButtonOn, 895, 587,65,65);
+                batch.draw(RedButtonOn, 895, 654,65,65);
+            }
+            if(level1_1.getLuciAccese()==4){
+                batch.draw(RedButtonOn, 895, 520,65,65);
+                batch.draw(RedButtonOn, 895, 587,65,65);
+                batch.draw(RedButtonOn, 895, 654,65,65);
+                batch.draw(RedButtonOn, 895, 721,65,65);
+            }
+        if(level1_1.getLuciAccese()==5){
+            batch.draw(RedButtonOn, 895, 520,65,65);
+            batch.draw(RedButtonOn, 895, 587,65,65);
+            batch.draw(RedButtonOn, 895, 654,65,65);
+            batch.draw(RedButtonOn, 895, 721,65,65);
+            batch.draw(RedButtonOn, 895, 788,65,65);
         }
-        if(gameover){
-            batch.draw(explosion, 0, 0, 1681,919);
-        }
-        if(win){
-            batch.draw(winScreen, 0,0, 1681,919);
+
+        if(win||gameover){
+            if(gameover){
+                batch.draw(explosion, 0, 0, 1681,919);
+            }
+            if(win) {
+                batch.draw(winScreen, 0, 0, 1681, 919);
+            }
+            level1_1.genera();
             timer=500;
             dotY=670;
             dotX=610;
@@ -283,9 +316,14 @@ public class Main extends ApplicationAdapter {
         batch.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.WHITE);
-        if(!istruzioniOn) {
-            shapeRenderer.circle(dotX, dotY, 10);
+        if(istruzioniOn || win || gameover) {
+            shapeRenderer.circle(dotX, dotY, 0);
         }
+        else {
+            shapeRenderer.circle(dotX, dotY, 1);
+        }
+
+
         shapeRenderer.end();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.WHITE);
