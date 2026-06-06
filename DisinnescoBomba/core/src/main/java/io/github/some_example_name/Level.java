@@ -1,6 +1,8 @@
 package io.github.some_example_name;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.sun.org.apache.xpath.internal.objects.XString;
+import org.w3c.dom.Text;
 
 public class Level {
 
@@ -10,6 +12,12 @@ public class Level {
     private int luciAccese;
     private boolean attivo;
     private double tempo;
+    private Texture istruzioni;
+    private int xIstruzioni;
+    private int yIstruzioni;
+    private int wIstruzioni;
+    private int hIstruzioni;
+
 
     public String getCodiceDisinnesco() {
         return codiceDisinnesco;
@@ -54,6 +62,30 @@ public class Level {
     public double getTempo(){return tempo;}
 
     public void setTempo(double tempo){this.tempo=tempo;}
+
+    public Texture getIstruzioni(){return istruzioni;}
+
+    public void setIstruzioni(Texture istruzioni){this.istruzioni=istruzioni;}
+
+    public int getxIstruzioni(){return xIstruzioni;}
+
+    public void setxIstruzioni(int xIstruzioni){this.xIstruzioni=xIstruzioni;}
+
+    public int getyIstruzioni(){return yIstruzioni;}
+
+    public void setyIstruzioni(int yIstruzioni){this.yIstruzioni=yIstruzioni;}
+
+    public int getwIstruzioni(){return wIstruzioni;}
+
+    public void setwIstruzioni(int wIstruzioni){this.wIstruzioni=wIstruzioni;}
+
+    public int gethIstruzioni(){return hIstruzioni;}
+
+    public void sethIstruzioni(int hIstruzioni){this.hIstruzioni=hIstruzioni;}
+
+
+
+
 
 
 }

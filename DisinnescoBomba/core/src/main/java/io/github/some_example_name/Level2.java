@@ -4,15 +4,14 @@ import com.badlogic.gdx.graphics.Texture;
 
 import java.util.Random;
 
-public class Level1 extends Level {
+public class Level2 extends Level {
 
-
-    public Level1() {
-        setTempo(500);
+    public Level2(){
+        setTempo(300);
         setxIstruzioni(330);
-        setyIstruzioni(50);
-        setwIstruzioni(1034);
-        sethIstruzioni(698);
+        setyIstruzioni(10);
+        setwIstruzioni(614);
+        sethIstruzioni(900);
 
         genera();
         int N=getLuciAccese();
@@ -21,28 +20,28 @@ public class Level1 extends Level {
         if(N%2==0){
             if(isLampeggiante()){
                 setColoreDisinnesco("red");
-                V=2;
+                V=3;
             }
             if(!isLampeggiante()){
                 setColoreDisinnesco("yellow");
-                V=7;
+                V=6;
             }
         }
         if(!(N%2==0)){
             if(isLampeggiante()){
                 setColoreDisinnesco("blue");
-                V=4;
+                V=1;
             }
             if(!isLampeggiante()){
                 setColoreDisinnesco("green");
-                V=5;
+                V=4;
             }
         }
         if(isLampeggiante()) {
-            codice = (5000 + N)+V;
+            codice = (5000 + N)*2+V;
         }
         if(!isLampeggiante()) {
-            codice = (5000 + N)-V;
+            codice = (5000 + N)*3+V;
         }
 
         String val= Integer.toString(codice);
@@ -57,6 +56,6 @@ public class Level1 extends Level {
         setLuciAccese(random.nextInt(6));
     }
     public void loadIstruzioni() {
-        setIstruzioni(new Texture("istruzioni1.png"));
+        setIstruzioni(new Texture("istruzioni2.png"));
     }
 }

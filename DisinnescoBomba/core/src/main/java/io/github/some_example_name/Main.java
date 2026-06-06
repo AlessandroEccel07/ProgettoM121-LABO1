@@ -50,7 +50,6 @@ public class Main extends ApplicationAdapter {
     private Texture explosion;
     private Texture menuBackground;
     private Texture istruzioniFolder;
-    private Texture istruzioni;
     private Texture winScreen;
     private double redButtonTimer;
     private boolean redButtonisOn;
@@ -66,6 +65,9 @@ public class Main extends ApplicationAdapter {
     private float dissolvenza;
     private boolean getTempo;
     Level1 level1_1 = new Level1();
+    Level2 level2_1 = new Level2();
+    Level3 level3_1 = new Level3();
+    private Level level;
 
     @Override
     public void create() {
@@ -77,7 +79,6 @@ public class Main extends ApplicationAdapter {
         RedButtonOff = new Texture("RedButtonOff.png");
         explosion = new Texture("BombaEsplosa.png");
         istruzioniFolder = new Texture("istruzioniFolder.png");
-        istruzioni = new Texture("istruzioni.png");
         winScreen = new Texture("BombaDisinnescata.png");
         dotBounds =new Rectangle(dotX, dotY,10,10);
         colorRectanglebounds =new Rectangle(484, 558, 250,245);
@@ -89,7 +90,6 @@ public class Main extends ApplicationAdapter {
         livellomediobounds= new Rectangle(680, 140, 300,185 );
         livellodifficilebounds= new Rectangle(1050, 140, 300,185 );
         istruzioniFolderBounds= new Rectangle(-10, 100,160,600 );
-        istruzioniBounds= new Rectangle(330, 50,1034 , 698 );
         stopButton= new Circle(1148,615,55);
         font = new BitmapFont();
         font.setColor(Color.RED);
@@ -104,6 +104,8 @@ public class Main extends ApplicationAdapter {
         win=false;
         wasgameover= false;
         dissolvenza= 1f;
+        level=null;
+
 
         bombDefuse=Gdx.audio.newSound(Gdx.files.internal("bombDefuse.mp3"));
         explosionFast=Gdx.audio.newSound(Gdx.files.internal("explosionFast.mp3"));
@@ -120,18 +122,40 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void render() {
+
         float mouseX = Gdx.input.getX();
         float mouseY = Gdx.graphics.getHeight()- Gdx.input.getY();
-        if(level1_1.isAttivo()==false){
+        if(level1_1.isAttivo()==false&&level2_1.isAttivo()==false&&level3_1.isAttivo()==false){
             dissolvenza=1f;
             menuMusic.play();
             winMusic.stop();
             win=false;
             gameover=false;
+            countNumbers=0;
             batch.begin();
             batch.draw(menuBackground,0,0, 1681,919);
             if(livellofacilebounds.contains(mouseX,mouseY)&&Gdx.input.justTouched()){
+                level=level1_1;
+                istruzioniBounds= new Rectangle(level1_1.getxIstruzioni(), level1_1.getyIstruzioni(),level1_1.getwIstruzioni() , level1_1.gethIstruzioni() );
+                level1_1.loadIstruzioni();
                 level1_1.setAttivo(true);
+                timer= level1_1.getTempo();
+                bombTick.play();
+            }
+            if(livellomediobounds.contains(mouseX,mouseY)&&Gdx.input.justTouched()){
+                level=level2_1;
+                istruzioniBounds= new Rectangle(level2_1.getxIstruzioni(), level2_1.getyIstruzioni(),level2_1.getwIstruzioni() , level2_1.gethIstruzioni() );
+                level2_1.loadIstruzioni();
+                level2_1.setAttivo(true);
+                timer= level2_1.getTempo();
+                bombTick.play();
+            }
+            if(livellodifficilebounds.contains(mouseX,mouseY)&&Gdx.input.justTouched()){
+                level=level3_1;
+                istruzioniBounds= new Rectangle(level3_1.getxIstruzioni(), level3_1.getyIstruzioni(),level3_1.getwIstruzioni() , level3_1.gethIstruzioni() );
+                level3_1.loadIstruzioni();
+                level3_1.setAttivo(true);
+                timer= level3_1.getTempo();
                 bombTick.play();
             }
 
@@ -146,7 +170,7 @@ public class Main extends ApplicationAdapter {
 
         }else{
         if(!getTempo) {
-            timer = level1_1.getTempo();
+            timer = level.getTempo();
             getTempo=true;
         }
         menuMusic.stop();
@@ -242,7 +266,7 @@ public class Main extends ApplicationAdapter {
         }
 
         //LOGICA GIOCO
-            if(level1_1.isAttivo()){
+            if(level.isAttivo()&&!win&&!gameover){
                 if(!istruzioniOn&&istruzioniFolderBounds.contains(mouseX,mouseY)&&Gdx.input.justTouched()){
                     istruzioniOn=true;
                 }
@@ -251,7 +275,7 @@ public class Main extends ApplicationAdapter {
 
                 }
                 if(stopButton.contains(mouseX,mouseY)&&Gdx.input.justTouched()){
-                    if(inputCodice.equals(level1_1.getCodiceDisinnesco())&&color.equals(level1_1.getColoreDisinnesco())){
+                    if(inputCodice.equals(level.getCodiceDisinnesco())&&color.equals(level.getColoreDisinnesco())){
                         bombDefuse.play();
                         win=true;
                         bombTick.stop();
@@ -273,10 +297,10 @@ public class Main extends ApplicationAdapter {
 
         dotY += dotVelX* dt;
         dotX += dotVelY* dt;
-//        if (!(dotBounds.overlaps(colorRectanglebounds))) {
-//            dotX= 610;
-//            dotY= 670;
-//        }
+        if (!(dotBounds.overlaps(colorRectanglebounds))) {
+            dotX= 610;
+            dotY= 670;
+        }
         if (dotBounds.overlaps(redRectanglebounds)) {
             color="red";
         }
@@ -301,35 +325,35 @@ public class Main extends ApplicationAdapter {
         font.draw(batch, inputCodice, 450,307);
         batch.draw(istruzioniFolder, -10, 100,400,600 );
         if(istruzioniOn){
-            batch.draw(istruzioni, 330,50, 1034 , 698);
+            batch.draw(level.getIstruzioni(), level.getxIstruzioni(),level.getyIstruzioni(), level.getwIstruzioni() , level.gethIstruzioni());
         }
         if(!istruzioniOn) {
-            if (level1_1.isLampeggiante()) {
+            if (level.isLampeggiante()) {
                 if (redButtonisOn) {
                     batch.draw(RedButtonOn, 1015, 162);
                 } else {
                     batch.draw(RedButtonOff, 1015, 162);
                 }
             }
-                if (level1_1.getLuciAccese() == 1) {
+                if (level.getLuciAccese() == 1) {
                     batch.draw(RedButtonOn, 895, 520, 65, 65);
                 }
-                if(level1_1.getLuciAccese()==2){
+                if(level.getLuciAccese()==2){
                     batch.draw(RedButtonOn, 895, 520,65,65);
                     batch.draw(RedButtonOn, 895, 587,65,65);
                 }
-                if(level1_1.getLuciAccese()==3){
+                if(level.getLuciAccese()==3){
                     batch.draw(RedButtonOn, 895, 520,65,65);
                     batch.draw(RedButtonOn, 895, 587,65,65);
                     batch.draw(RedButtonOn, 895, 654,65,65);
                 }
-                if(level1_1.getLuciAccese()==4){
+                if(level.getLuciAccese()==4){
                     batch.draw(RedButtonOn, 895, 520,65,65);
                     batch.draw(RedButtonOn, 895, 587,65,65);
                     batch.draw(RedButtonOn, 895, 654,65,65);
                     batch.draw(RedButtonOn, 895, 721,65,65);
                 }
-                if(level1_1.getLuciAccese()==5){
+                if(level.getLuciAccese()==5){
                     batch.draw(RedButtonOn, 895, 520,65,65);
                     batch.draw(RedButtonOn, 895, 587,65,65);
                     batch.draw(RedButtonOn, 895, 654,65,65);
@@ -348,12 +372,17 @@ public class Main extends ApplicationAdapter {
                 batch.draw(winScreen, 0, 0, 1681, 919);
             }
             level1_1.genera();
-            timer=500;
+            level2_1.genera();
+            level3_1.genera();
+
             dotY=670;
             dotX=610;
             inputCodice="";
             if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-                level1_1.setAttivo(false);
+                level.setAttivo(false);
+                explosionFast.stop();
+                bombDefuse.stop();
+                countNumbers=0;
             }
         }
 
@@ -364,7 +393,7 @@ public class Main extends ApplicationAdapter {
             shapeRenderer.circle(dotX, dotY, 0);
         }
         else {
-            shapeRenderer.circle(dotX, dotY, 1);
+            shapeRenderer.circle(dotX, dotY, 10);
         }
         if(gameover){
             Gdx.gl.glEnable(GL20.GL_BLEND);
