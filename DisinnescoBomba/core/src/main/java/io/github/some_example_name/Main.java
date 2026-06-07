@@ -1,3 +1,6 @@
+//Per Le parti segnate "Porzione fatta con AI" si intende con l'aiuto dell'AI per la comprensione tramite esempi
+//Nessun pezzo di codice e stato generato dall'AI eccetto le righe segnate "Riga fatta con AI"
+
 package io.github.some_example_name;
 
 import com.badlogic.gdx.ApplicationAdapter;
@@ -5,8 +8,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,7 +19,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 /**import javax.swing.*;
 import java.awt.*;*/
@@ -51,6 +59,7 @@ public class Main extends ApplicationAdapter {
     private Texture menuBackground;
     private Texture istruzioniFolder;
     private Texture winScreen;
+    private Texture completato;
     private double redButtonTimer;
     private boolean redButtonisOn;
     private boolean gameover;
@@ -64,15 +73,21 @@ public class Main extends ApplicationAdapter {
     public boolean wasgameover;
     private float dissolvenza;
     private boolean getTempo;
+    FileHandle file ;
     Level1 level1_1 = new Level1();
     Level2 level2_1 = new Level2();
     Level3 level3_1 = new Level3();
     private Level level;
+    OrthographicCamera camera;
+    Viewport viewport;
+
 
     @Override
     public void create() {
         shapeRenderer = new ShapeRenderer();
         batch = new SpriteBatch();
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(1681, 919, camera);
         background = new Texture("background.png");
         menuBackground = new Texture("menuBackground.png");
         RedButtonOn = new Texture("RedButtonOn.png");
@@ -80,6 +95,11 @@ public class Main extends ApplicationAdapter {
         explosion = new Texture("BombaEsplosa.png");
         istruzioniFolder = new Texture("istruzioniFolder.png");
         winScreen = new Texture("BombaDisinnescata.png");
+        completato=new Texture("completato.png");
+        file=Gdx.files.local("salvataggio.txt");
+        if (!file.exists()) {
+            file.writeString("0\n0\n0\n0", false);
+        }
         dotBounds =new Rectangle(dotX, dotY,10,10);
         colorRectanglebounds =new Rectangle(484, 558, 250,245);
         redRectanglebounds=new Rectangle(491, 711, 95,77);
@@ -105,6 +125,7 @@ public class Main extends ApplicationAdapter {
         wasgameover= false;
         dissolvenza= 1f;
         level=null;
+        carica();
 
 
         bombDefuse=Gdx.audio.newSound(Gdx.files.internal("bombDefuse.mp3"));
@@ -122,9 +143,18 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void render() {
+        //Porzione fatta con AI
+        camera.update();
+        batch.setProjectionMatrix(camera.combined);//Riga fatta con AI
+        shapeRenderer.setProjectionMatrix(camera.combined);//Riga fatta con AI
+        Vector3 mouse = new Vector3(
+            Gdx.input.getX(),
+            Gdx.input.getY(),
+            0
+        );
 
-        float mouseX = Gdx.input.getX();
-        float mouseY = Gdx.graphics.getHeight()- Gdx.input.getY();
+        camera.unproject(mouse);//Riga fatta con AI
+
         if(level1_1.isAttivo()==false&&level2_1.isAttivo()==false&&level3_1.isAttivo()==false){
             dissolvenza=1f;
             menuMusic.play();
@@ -134,15 +164,28 @@ public class Main extends ApplicationAdapter {
             countNumbers=0;
             batch.begin();
             batch.draw(menuBackground,0,0, 1681,919);
-            if(livellofacilebounds.contains(mouseX,mouseY)&&Gdx.input.justTouched()){
+            if (level1_1.isCompletato()){
+                batch.draw(completato,350,100,250,250);
+            }
+            if (level2_1.isCompletato()){
+                batch.draw(completato,715,100,250,250);
+            }
+            if (level3_1.isCompletato()){
+                batch.draw(completato,1080,100,250,250);
+            }
+            batch.end();
+            if(livellofacilebounds.contains(mouse.x,mouse.y)&&Gdx.input.justTouched()){
+                level1_1.genera();
                 level=level1_1;
                 istruzioniBounds= new Rectangle(level1_1.getxIstruzioni(), level1_1.getyIstruzioni(),level1_1.getwIstruzioni() , level1_1.gethIstruzioni() );
                 level1_1.loadIstruzioni();
                 level1_1.setAttivo(true);
                 timer= level1_1.getTempo();
                 bombTick.play();
+
             }
-            if(livellomediobounds.contains(mouseX,mouseY)&&Gdx.input.justTouched()){
+            if(livellomediobounds.contains(mouse.x,mouse.y)&&Gdx.input.justTouched()){
+                level2_1.genera();
                 level=level2_1;
                 istruzioniBounds= new Rectangle(level2_1.getxIstruzioni(), level2_1.getyIstruzioni(),level2_1.getwIstruzioni() , level2_1.gethIstruzioni() );
                 level2_1.loadIstruzioni();
@@ -150,7 +193,8 @@ public class Main extends ApplicationAdapter {
                 timer= level2_1.getTempo();
                 bombTick.play();
             }
-            if(livellodifficilebounds.contains(mouseX,mouseY)&&Gdx.input.justTouched()){
+            if(livellodifficilebounds.contains(mouse.x,mouse.y)&&Gdx.input.justTouched()){
+                level3_1.genera();
                 level=level3_1;
                 istruzioniBounds= new Rectangle(level3_1.getxIstruzioni(), level3_1.getyIstruzioni(),level3_1.getwIstruzioni() , level3_1.gethIstruzioni() );
                 level3_1.loadIstruzioni();
@@ -160,12 +204,12 @@ public class Main extends ApplicationAdapter {
             }
 
 
-            batch.end();
+
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             shapeRenderer.setColor(Color.YELLOW);
-            shapeRenderer.rect(livellofacilebounds.x , livellofacilebounds.y, 300,185);
-            shapeRenderer.rect(livellodifficilebounds.x , livellodifficilebounds.y, 300,185);
-            shapeRenderer.rect(livellomediobounds.x , livellomediobounds.y, 300,185);
+//            shapeRenderer.rect(livellofacilebounds.x , livellofacilebounds.y, 300,185);
+//            shapeRenderer.rect(livellodifficilebounds.x , livellodifficilebounds.y, 300,185);
+//            shapeRenderer.rect(livellomediobounds.x , livellomediobounds.y, 300,185);
             shapeRenderer.end();
 
         }else{
@@ -267,14 +311,14 @@ public class Main extends ApplicationAdapter {
 
         //LOGICA GIOCO
             if(level.isAttivo()&&!win&&!gameover){
-                if(!istruzioniOn&&istruzioniFolderBounds.contains(mouseX,mouseY)&&Gdx.input.justTouched()){
+                if(!istruzioniOn&&istruzioniFolderBounds.contains(mouse.x,mouse.y)&&Gdx.input.justTouched()){
                     istruzioniOn=true;
                 }
-                else if(istruzioniOn&&Gdx.input.justTouched()&&!istruzioniBounds.contains(mouseX,mouseY)){
+                else if(istruzioniOn&&Gdx.input.justTouched()&&!istruzioniBounds.contains(mouse.x,mouse.y)){
                     istruzioniOn=false;
 
                 }
-                if(stopButton.contains(mouseX,mouseY)&&Gdx.input.justTouched()){
+                if(stopButton.contains(mouse.x,mouse.y)&&Gdx.input.justTouched()){
                     if(inputCodice.equals(level.getCodiceDisinnesco())&&color.equals(level.getColoreDisinnesco())){
                         bombDefuse.play();
                         win=true;
@@ -369,11 +413,11 @@ public class Main extends ApplicationAdapter {
                 batch.draw(explosion, 0, 0, 1681,919);
             }
             if(win) {
+                level.setCompletato(true);
+                salva();
                 batch.draw(winScreen, 0, 0, 1681, 919);
             }
-            level1_1.genera();
-            level2_1.genera();
-            level3_1.genera();
+
 
             dotY=670;
             dotX=610;
@@ -396,7 +440,7 @@ public class Main extends ApplicationAdapter {
             shapeRenderer.circle(dotX, dotY, 10);
         }
         if(gameover){
-            Gdx.gl.glEnable(GL20.GL_BLEND);
+            Gdx.gl.glEnable(GL20.GL_BLEND);//Riga fatta con AI
             shapeRenderer.setColor(1f,1f,1f,dissolvenza);
             shapeRenderer.rect(0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() );
             dissolvenza-= Gdx.graphics.getDeltaTime()*0.1f;
@@ -419,6 +463,33 @@ public class Main extends ApplicationAdapter {
 //        shapeRenderer.rect(blueRectanglebounds.x , blueRectanglebounds.y, 94,75);
 //        shapeRenderer.circle(stopButton.x, stopButton.y, 55);
         shapeRenderer.end();}
+    }
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height, true);
+    }
+    public void salva() {
+        //Porzione fatta con AI
+        String dati =
+            (level1_1.isCompletato() ? "1" : "0") + "\n" +
+                (level2_1.isCompletato() ? "1" : "0") + "\n" +
+                (level3_1.isCompletato() ? "1" : "0");
+
+        file.writeString(dati, false);
+    }
+
+    public void carica() {
+
+        if(!file.exists()) {return;}
+//Porzione fatta con AI
+        String[] dati =
+            file.readString().split("\n");
+
+        level1_1.setCompletato(dati[0].equals("1"));
+
+        level2_1.setCompletato(dati[1].equals("1"));
+
+        level3_1.setCompletato(dati[2].equals("1"));
     }
 
     @Override

@@ -13,8 +13,14 @@ public class Level1 extends Level {
         setyIstruzioni(50);
         setwIstruzioni(1034);
         sethIstruzioni(698);
-
+        setCompletato(false);
         genera();
+    }
+    public void genera(){
+        Random random = new Random();
+        setLampeggiante(random.nextBoolean());
+
+        setLuciAccese(random.nextInt(6));
         int N=getLuciAccese();
         int V=0;
         int codice=0;
@@ -49,12 +55,8 @@ public class Level1 extends Level {
         setCodiceDisinnesco(val);
 
         setAttivo(false);
-    }
-    public void genera(){
-        Random random = new Random();
-        setLampeggiante(random.nextBoolean());
 
-        setLuciAccese(random.nextInt(6));
+
     }
     public void loadIstruzioni() {
         setIstruzioni(new Texture("istruzioni1.png"));

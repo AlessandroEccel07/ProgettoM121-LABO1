@@ -11,7 +11,15 @@ public class Level3 extends Level{
         setyIstruzioni(10);
         setwIstruzioni(614);
         sethIstruzioni(900);
+        setCompletato(false);
         genera();
+
+    }
+    public void genera(){
+        Random random = new Random();
+        setLampeggiante(random.nextBoolean());
+
+        setLuciAccese(random.nextInt(6));
         int N = getLuciAccese();
         int V=0;
         int Ropposto=0;
@@ -73,12 +81,6 @@ public class Level3 extends Level{
         setCodiceDisinnesco(val);
 
         setAttivo(false);
-    }
-    public void genera(){
-        Random random = new Random();
-        setLampeggiante(random.nextBoolean());
-
-        setLuciAccese(random.nextInt(6));
     }
     public void loadIstruzioni() {
         setIstruzioni(new Texture("istruzioni3.png"));

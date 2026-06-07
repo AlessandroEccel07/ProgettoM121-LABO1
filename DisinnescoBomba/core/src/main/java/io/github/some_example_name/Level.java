@@ -11,6 +11,7 @@ public class Level {
     private boolean lampeggiante;
     private int luciAccese;
     private boolean attivo;
+    private boolean completato;
     private double tempo;
     private Texture istruzioni;
     private int xIstruzioni;
@@ -18,7 +19,7 @@ public class Level {
     private int wIstruzioni;
     private int hIstruzioni;
 
-
+    //Porzione fatta con AI
     public String getCodiceDisinnesco() {
         return codiceDisinnesco;
     }
@@ -82,6 +83,12 @@ public class Level {
     public int gethIstruzioni(){return hIstruzioni;}
 
     public void sethIstruzioni(int hIstruzioni){this.hIstruzioni=hIstruzioni;}
+
+    public boolean isCompletato() {return completato;}
+
+    public void setCompletato(boolean completato) {
+        this.completato = completato;
+    }
 
 
 

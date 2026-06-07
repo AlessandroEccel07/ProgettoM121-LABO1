@@ -1,3 +1,7 @@
+//Porzione fatta con AI
+plugins {
+  id 'java'
+}
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 eclipse.project.name = appName + '-core'
 
@@ -7,4 +11,10 @@ dependencies {
   if(enableGraalNative == 'true') {
     implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"
   }
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+}
+
+//Porzione fatta con AI
+test {
+  useJUnitPlatform()
 }
